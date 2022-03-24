@@ -29,40 +29,6 @@
       }
     }
   },
-  "MeshSphere|2022-03-22T15:27:11.514Z|93078": {
-    "ƒ.MeshSphere": {
-      "idResource": "MeshSphere|2022-03-22T15:27:11.514Z|93078",
-      "name": "Pacman",
-      "type": "MeshSphere",
-      "shape": {
-        "ƒ.Vector2": [
-          "[0, 0.5]",
-          "[0.19134171307086945, 0.4619397521018982]",
-          "[0.3535533845424652, 0.3535533845424652]",
-          "[0.4619397521018982, 0.19134171307086945]",
-          "[0.5, 0]",
-          "[0.4619397521018982, -0.19134171307086945]",
-          "[0.3535533845424652, -0.3535533845424652]",
-          "[0.19134171307086945, -0.4619397521018982]",
-          "[0, -0.5]"
-        ]
-      },
-      "longitudes": 8,
-      "latitudes": 8
-    }
-  },
-  "Material|2022-03-22T15:27:48.792Z|96140": {
-    "ƒ.Material": {
-      "name": "White",
-      "idResource": "Material|2022-03-22T15:27:48.792Z|96140",
-      "shader": "ShaderLit",
-      "coat": {
-        "ƒ.CoatColored": {
-          "color": "[1, 1, 1, 1]"
-        }
-      }
-    }
-  },
   "Graph|2022-03-17T14:08:51.514Z|30434": {
     "ƒ.Graph": {
       "name": "Game",
@@ -2092,62 +2058,6 @@
                 }
               }
             ]
-          }
-        },
-        {
-          "ƒ.Node": {
-            "name": "Pacman",
-            "active": true,
-            "components": {
-              "ComponentMesh": [
-                {
-                  "ƒ.ComponentMesh": {
-                    "idMesh": "MeshSphere|2022-03-22T15:27:11.514Z|93078",
-                    "pivot": {
-                      "translation": "[0, 0, 0]",
-                      "rotation": "[0, 0, 0]",
-                      "scaling": "[1, 1, 1]"
-                    },
-                    "Component": {
-                      "active": true
-                    }
-                  }
-                }
-              ],
-              "ComponentMaterial": [
-                {
-                  "ƒ.ComponentMaterial": {
-                    "sortForAlpha": false,
-                    "clrPrimary": "[1, 0.9686274509803922, 0, 1]",
-                    "clrSecondary": "[1, 1, 1, 1]",
-                    "pivot": {
-                      "translation": "[0, 0]",
-                      "rotation": 0,
-                      "scaling": "[1, 1]"
-                    },
-                    "Component": {
-                      "active": true
-                    },
-                    "idMaterial": "Material|2022-03-22T15:27:48.792Z|96140"
-                  }
-                }
-              ],
-              "ComponentTransform": [
-                {
-                  "ƒ.ComponentTransform": {
-                    "local": {
-                      "translation": "[0, 0, 0]",
-                      "rotation": "[0, 0, 0]",
-                      "scaling": "[1, 1, 1]"
-                    },
-                    "Component": {
-                      "active": true
-                    }
-                  }
-                }
-              ]
-            },
-            "children": []
           }
         }
       ],

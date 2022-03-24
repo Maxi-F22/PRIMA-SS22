@@ -168,7 +168,9 @@ declare namespace FudgeCore {
         /** dispatched to {@link Node} when recalculating transforms for render */
         RENDER_PREPARE = "renderPrepare",
         RENDER_PREPARE_START = "renderPrepareStart",
-        RENDER_PREPARE_END = "renderPrepareEnd"
+        RENDER_PREPARE_END = "renderPrepareEnd",
+        /** dispatched to Joint-Components in order to disconnect */
+        DISCONNECT_JOINT = "disconnectJoint"
     }
     type EventListenerƒ = ((_event: EventPointer) => void) | ((_event: EventDragDrop) => void) | ((_event: EventWheel) => void) | ((_event: EventKeyboard) => void) | ((_event: Eventƒ) => void) | ((_event: EventPhysics) => void) | ((_event: CustomEvent) => void) | EventListenerOrEventListenerObject;
     type Eventƒ = EventPointer | EventDragDrop | EventWheel | EventKeyboard | Event | EventPhysics | CustomEvent;
@@ -1241,6 +1243,7 @@ declare namespace FudgeCore {
         protected constructJoint(..._configParams: Object[]): void;
         protected configureJoint(): void;
         protected deleteFromMutator(_mutator: Mutator, _delete: Mutator): void;
+        private hndEvent;
     }
 }
 declare namespace FudgeCore {
@@ -1930,6 +1933,19 @@ declare namespace FudgeCore {
     }
 }
 declare namespace FudgeCore {
+    /**
+     * Synchronizes the graph instance this component is attached to with the graph and vice versa
+     * @authors Jirka Dell'Oro-Friedl, HFU, 2022
+     * @link https://github.com/JirkaDellOro/FUDGE/wiki/Component
+     */
+    class ComponentGraphFilter extends Component {
+        static readonly iSubclass: number;
+        constructor();
+        serialize(): Serialization;
+        deserialize(_serialization: Serialization): Promise<Serializable>;
+    }
+}
+declare namespace FudgeCore {
     type TypeOfLight = new () => Light;
     /**
      * Baseclass for different kinds of lights.
@@ -2081,21 +2097,6 @@ declare namespace FudgeCore {
         constructor();
         serialize(): Serialization;
         deserialize(_serialization: Serialization): Promise<Serializable>;
-    }
-}
-declare namespace FudgeCore {
-    /**
-     * Synchronizes the graph instance this component is attached to with the graph and vice versa
-     * @authors Jirka Dell'Oro-Friedl, HFU, 2022
-     * @link https://github.com/JirkaDellOro/FUDGE/wiki/Component
-     */
-    class ComponentSyncGraph extends Component {
-        static readonly iSubclass: number;
-        constructor();
-        serialize(): Serialization;
-        deserialize(_serialization: Serialization): Promise<Serializable>;
-        private hndEvent;
-        private hndMutation;
     }
 }
 declare namespace FudgeCore {
@@ -2625,20 +2626,21 @@ declare namespace FudgeCore {
      * @link https://github.com/JirkaDellOro/FUDGE/wiki/Resource
      */
     class GraphInstance extends Node {
-        /** id of the resource that instance was created from */
-        private idSource;
+        #private;
         /**
          * This constructor allone will not create a reconstruction, but only save the id.
          * To create an instance of the graph, call reset on this or set with a graph as parameter.
          * Prefer Project.createGraphInstance(_graph).
          */
         constructor(_graph?: Graph);
+        get idSource(): string;
         /**
          * Recreate this node from the {@link Graph} referenced
          */
         reset(): Promise<void>;
         serialize(): Serialization;
         deserialize(_serialization: Serialization): Promise<Serializable>;
+        connectToGraph(): void;
         /**
          * Set this node to be a recreation of the {@link Graph} given
          */
@@ -2647,6 +2649,16 @@ declare namespace FudgeCore {
          * Retrieve the graph this instances refers to
          */
         get(): Graph;
+        /**
+         * Source graph mutated, reflect mutation in this instance
+         */
+        private hndMutationGraph;
+        /**
+         * This instance mutated, reflect mutation in source graph
+         */
+        private hndMutationInstance;
+        private reflectMutation;
+        private isFiltered;
     }
 }
 declare namespace FudgeCore {
@@ -4847,7 +4859,6 @@ declare namespace FudgeCore {
         private bodyList;
         private jointList;
         constructor();
-        getOimoWorld(): OIMO.World;
         /**
          * Define the currently active Physics instance
          */
@@ -4919,6 +4930,7 @@ declare namespace FudgeCore {
         private static getRayEndPoint;
         /** Internal function to get the distance in which a ray hit by subtracting points from each other and get the square root of the squared product of each component. */
         private static getRayDistance;
+        getOimoWorld(): OIMO.World;
     }
 }
 declare namespace FudgeCore {
@@ -5372,38 +5384,42 @@ declare namespace FudgeCore {
     }
 }
 declare namespace FudgeCore {
-    enum MODE {
+    export enum MODE {
         EDITOR = 0,
         RUNTIME = 1
     }
-    interface SerializableResource extends Serializable {
+    export interface SerializableResource extends Serializable {
         name: string;
         type: string;
         idResource: string;
     }
-    interface Resources {
+    export interface Resources {
         [idResource: string]: SerializableResource;
     }
-    interface SerializationOfResources {
+    export interface SerializationOfResources {
         [idResource: string]: Serialization;
     }
-    interface ScriptNamespaces {
+    export interface ScriptNamespaces {
         [name: string]: Object;
     }
-    interface ComponentScripts {
+    export interface ComponentScripts {
         [namespace: string]: ComponentScript[];
+    }
+    interface GraphInstancesToResync {
+        [idResource: string]: GraphInstance[];
     }
     /**
      * Static class handling the resources used with the current FUDGE-instance.
      * Keeps a list of the resources and generates ids to retrieve them.
      * Resources are objects referenced multiple times but supposed to be stored only once
      */
-    abstract class Project {
+    export abstract class Project {
         static resources: Resources;
         static serialization: SerializationOfResources;
         static scriptNamespaces: ScriptNamespaces;
         static baseURL: URL;
         static mode: MODE;
+        static graphInstancesToResync: GraphInstancesToResync;
         /**
          * Registers the resource and generates an id for it by default.
          * If the resource already has an id, thus having been registered, its deleted from the list and registered anew.
@@ -5434,6 +5450,8 @@ declare namespace FudgeCore {
          */
         static registerAsGraph(_node: Node, _replaceWithInstance?: boolean): Promise<Graph>;
         static createGraphInstance(_graph: Graph): Promise<GraphInstance>;
+        static registerGraphInstanceForResync(_instance: GraphInstance): void;
+        static resyncGraphInstances(_graph: Graph): void;
         static registerScriptNamespace(_namespace: Object): void;
         static getComponentScripts(): ComponentScripts;
         static loadScript(_url: RequestInfo): Promise<void>;
@@ -5450,6 +5468,7 @@ declare namespace FudgeCore {
         static deserialize(_serialization: SerializationOfResources): Promise<Resources>;
         private static deserializeResource;
     }
+    export {};
 }
 declare namespace GLTF {
     type GlTfId = number;

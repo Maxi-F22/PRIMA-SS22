@@ -42,7 +42,9 @@ var Script;
     ƒ.Debug.info("Main Program Template running!");
     let viewport;
     let pacman;
+    let pacman_moves_allowed = { up: true, down: false, right: true, left: false };
     let borders;
+    let border_coords = [];
     let move_direction = "";
     let direction_change = "";
     let speed = 1 / 100;
@@ -60,7 +62,7 @@ var Script;
         borders = graph.getChildrenByName("Grid")[0].getChildrenByName("Borders")[0].getChildren();
         for (let border_types of borders) {
             for (let border of border_types.getChildren()) {
-                console.log(border.mtxLocal.translation);
+                border_coords.push(border.mtxWorld.translation);
             }
         }
         ƒ.Loop.addEventListener("loopFrame" /* LOOP_FRAME */, update);
@@ -68,37 +70,83 @@ var Script;
     }
     function update(_event) {
         // ƒ.Physics.simulate();  // if physics is included and used
-        if (ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.ARROW_UP, ƒ.KEYBOARD_CODE.W])) {
+        if (pacman_moves_allowed.up && ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.ARROW_UP, ƒ.KEYBOARD_CODE.W])) {
             move_direction = "up";
         }
-        if (ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.ARROW_DOWN, ƒ.KEYBOARD_CODE.S])) {
+        if (pacman_moves_allowed.down && ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.ARROW_DOWN, ƒ.KEYBOARD_CODE.S])) {
             move_direction = "down";
         }
-        if (ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.ARROW_RIGHT, ƒ.KEYBOARD_CODE.D])) {
+        if (pacman_moves_allowed.right && ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.ARROW_RIGHT, ƒ.KEYBOARD_CODE.D])) {
             move_direction = "right";
         }
-        if (ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.ARROW_LEFT, ƒ.KEYBOARD_CODE.A])) {
+        if (pacman_moves_allowed.left && ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.ARROW_LEFT, ƒ.KEYBOARD_CODE.A])) {
             move_direction = "left";
         }
-        if (ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.SPACE])) {
-            move_direction = "";
-            direction_change = "";
-        }
+        // if (ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.SPACE])) {
+        //   move_direction = "";
+        //   direction_change = "";
+        // }
         move(move_direction);
         viewport.draw();
         ƒ.AudioManager.default.update();
     }
     function move(direction) {
         if (direction !== "") {
-            if (direction !== "" && (direction === "up" || direction === "down") && pacman.mtxLocal.translation.x % 1 < 0.01) {
+            if (direction !== "" && (direction === "up" || direction === "down") && pacman.mtxLocal.translation.x % 1 < 0.02) {
                 direction_change = direction;
             }
-            else if (direction !== "" && (direction === "left" || direction === "right") && pacman.mtxLocal.translation.y % 1 < 0.01) {
+            else if (direction !== "" && (direction === "left" || direction === "right") && pacman.mtxLocal.translation.y % 1 < 0.02) {
                 direction_change = direction;
             }
+            checkHitsWall(direction);
         }
         if (direction_change !== "") {
             pacman.mtxLocal.translate(speed_direction[direction_change]);
+        }
+    }
+    function checkHitsWall(direction) {
+        let hits_wall = false;
+        let hit_direction = [];
+        let pacman_grid = { up: ƒ.Vector3, down: ƒ.Vector3, right: ƒ.Vector3, left: ƒ.Vector3 };
+        pacman_grid.up = new ƒ.Vector3(Math.round(pacman.mtxLocal.translation.x), Math.round(pacman.mtxLocal.translation.y) + 1, 0);
+        pacman_grid.down = new ƒ.Vector3(Math.round(pacman.mtxLocal.translation.x), Math.round(pacman.mtxLocal.translation.y) - 1, 0);
+        pacman_grid.right = new ƒ.Vector3(Math.round(pacman.mtxLocal.translation.x) + 1, Math.round(pacman.mtxLocal.translation.y), 0);
+        pacman_grid.left = new ƒ.Vector3(Math.round(pacman.mtxLocal.translation.x) - 1, Math.round(pacman.mtxLocal.translation.y), 0);
+        pacman_moves_allowed.up = true;
+        pacman_moves_allowed.down = true;
+        pacman_moves_allowed.right = true;
+        pacman_moves_allowed.left = true;
+        for (let border of border_coords) {
+            if (border.equals(pacman_grid.up)) {
+                hits_wall = true;
+                hit_direction.push("up");
+                pacman_moves_allowed.up = false;
+            }
+            if (border.equals(pacman_grid.down)) {
+                hits_wall = true;
+                hit_direction.push("down");
+                pacman_moves_allowed.down = false;
+            }
+            if (border.equals(pacman_grid.right)) {
+                hits_wall = true;
+                hit_direction.push("right");
+                pacman_moves_allowed.right = false;
+            }
+            if (border.equals(pacman_grid.left)) {
+                hits_wall = true;
+                hit_direction.push("left");
+                pacman_moves_allowed.left = false;
+            }
+        }
+        for (let hit of hit_direction) {
+            if (hits_wall && hit === direction && ((direction === "up" || direction === "down") && pacman.mtxLocal.translation.y % 1 < 0.02)) {
+                move_direction = "";
+                direction_change = "";
+            }
+            else if (hits_wall && hit === direction && ((direction === "left" || direction === "right") && pacman.mtxLocal.translation.x % 1 < 0.02)) {
+                move_direction = "";
+                direction_change = "";
+            }
         }
     }
 })(Script || (Script = {}));

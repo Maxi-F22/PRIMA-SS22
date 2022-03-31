@@ -75,6 +75,14 @@
       }
     }
   },
+  "Audio|2022-03-31T12:46:39.855Z|37941": {
+    "ƒ.Audio": {
+      "url": "Sounds\\pacman_beginning.wav",
+      "idResource": "Audio|2022-03-31T12:46:39.855Z|37941",
+      "name": "IntroMusic",
+      "type": "Audio"
+    }
+  },
   "Graph|2022-03-17T14:08:51.514Z|30434": {
     "ƒ.Graph": {
       "name": "Game",
@@ -3745,9 +3753,9 @@
                   "ƒ.ComponentMesh": {
                     "idMesh": "MeshSphere|2022-03-22T15:27:11.514Z|93078",
                     "pivot": {
-                      "translation": "[0, 0, 0]",
+                      "translation": "[0, 0, 0.05000000074505806]",
                       "rotation": "[0, 0, 0]",
-                      "scaling": "[1, 1, 1]"
+                      "scaling": "[0.9000000953674316, 0.8999999761581421, 0]"
                     },
                     "Component": {
                       "active": true
@@ -3777,9 +3785,9 @@
                 {
                   "ƒ.ComponentTransform": {
                     "local": {
-                      "translation": "[0, 0, 0.05000000074505806]",
+                      "translation": "[0, 0, 0]",
                       "rotation": "[0, 0, 0]",
-                      "scaling": "[0.9000000953674316, 0.9000000357627869, 0]"
+                      "scaling": "[1.0000001192092896, 1, 1]"
                     },
                     "Component": {
                       "active": true
@@ -3790,10 +3798,54 @@
             },
             "children": []
           }
+        },
+        {
+          "ƒ.Node": {
+            "name": "Sound",
+            "active": true,
+            "components": {
+              "ComponentAudioListener": [
+                {
+                  "ƒ.ComponentAudioListener": {
+                    "active": true
+                  }
+                }
+              ],
+              "ComponentAudio": [
+                {
+                  "ƒ.ComponentAudio": {
+                    "active": true,
+                    "idResource": "Audio|2022-03-31T12:46:39.855Z|37941",
+                    "playing": true,
+                    "loop": false,
+                    "volume": 0.49999991059303284
+                  }
+                },
+                {
+                  "ƒ.ComponentAudio": {
+                    "active": true,
+                    "idResource": "Audio|2022-03-31T12:47:57.681Z|37385",
+                    "playing": false,
+                    "loop": false,
+                    "volume": 0.49999991059303284
+                  }
+                }
+              ]
+            },
+            "children": []
+          }
         }
       ],
       "idResource": "Graph|2022-03-17T14:08:51.514Z|30434",
       "type": "Graph"
+    }
+  },
+  "Audio|2022-03-31T12:47:57.681Z|37385": {
+    "ƒ.Audio": {
+      "url": "Sounds\\pacman_chomp.wav",
+      "idResource": "Audio|2022-03-31T12:47:57.681Z|37385",
+      "name": "WakaSound",
+      "type": "Audio"
     }
   }
 }

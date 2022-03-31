@@ -5,7 +5,6 @@ namespace Script {
   let viewport: ƒ.Viewport;
   let pacman: ƒ.Node;
   let pacman_moves_allowed: any = {up: true, down: false, right: true, left: false}
-  let borders: ƒ.Node[];
   let border_coords: ƒ.Vector3[] = [];
   let move_direction: string = "";
   let direction_change: string = "";
@@ -21,13 +20,21 @@ namespace Script {
 
   function start(_event: CustomEvent): void {
     viewport = _event.detail;
+
+    viewport.camera.mtxPivot.translate(new ƒ.Vector3(2.5,2.5,16));
+    viewport.camera.mtxPivot.rotateY(180);
+
+    console.log(viewport.camera);
+
     let graph: ƒ.Node = viewport.getBranch();
 
     pacman = graph.getChildrenByName("Pacman")[0];
-    borders = graph.getChildrenByName("Grid")[0].getChildrenByName("Borders")[0].getChildren();
+    let borders: ƒ.Node[] = graph.getChildrenByName("Grid")[0].getChildrenByName("Borders")[0].getChildren();
     for (let border_types of borders) {
       for (let border of border_types.getChildren()) {
-        border_coords.push(border.mtxWorld.translation);
+        for (let tile of border.getChildren()) {
+          border_coords.push(tile.mtxWorld.translation);
+        }
       }
     }
     ƒ.Loop.addEventListener(ƒ.EVENT.LOOP_FRAME, update);
@@ -38,15 +45,19 @@ namespace Script {
     // ƒ.Physics.simulate();  // if physics is included and used
     if (pacman_moves_allowed.up && ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.ARROW_UP, ƒ.KEYBOARD_CODE.W])) {
       move_direction = "up";
+      console.log("Button Pressed: UP");
     }
     if (pacman_moves_allowed.down && ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.ARROW_DOWN, ƒ.KEYBOARD_CODE.S])) {
       move_direction = "down";
+      console.log("Button Pressed: DOWN");
     }
     if (pacman_moves_allowed.right && ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.ARROW_RIGHT, ƒ.KEYBOARD_CODE.D])) {
       move_direction = "right";
+      console.log("Button Pressed: RIGHT");
     }
     if (pacman_moves_allowed.left && ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.ARROW_LEFT, ƒ.KEYBOARD_CODE.A])) {
       move_direction = "left";
+      console.log("Button Pressed: LEFT");
     }
     // if (ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.SPACE])) {
     //   move_direction = "";
@@ -55,7 +66,7 @@ namespace Script {
 
     move(move_direction);
     viewport.draw();
-    ƒ.AudioManager.default.update();
+    //ƒ.AudioManager.default.update();
   }
 
   function move(direction: string): void {
@@ -115,10 +126,12 @@ namespace Script {
       if (hits_wall && hit === direction && ((direction === "up" || direction === "down") && pacman.mtxLocal.translation.y % 1 < 0.02)) {
         move_direction = "";
         direction_change = "";
+        console.log("Hit Wall: " + hit);
       }
       else if (hits_wall && hit === direction && ((direction === "left" || direction === "right") && pacman.mtxLocal.translation.x % 1 < 0.02)) {
         move_direction = "";
         direction_change = "";
+        console.log("Hit Wall: " + hit);
       }
     }
 

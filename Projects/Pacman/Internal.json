@@ -83,6 +83,38 @@
       "type": "Audio"
     }
   },
+  "Audio|2022-03-31T12:47:57.681Z|37385": {
+    "ƒ.Audio": {
+      "url": "Sounds\\pacman_chomp.wav",
+      "idResource": "Audio|2022-03-31T12:47:57.681Z|37385",
+      "name": "WakaSound",
+      "type": "Audio"
+    }
+  },
+  "Material|2022-04-06T20:57:21.704Z|12681": {
+    "ƒ.Material": {
+      "name": "ShaderLitTextured",
+      "idResource": "Material|2022-04-06T20:57:21.704Z|12681",
+      "shader": "ShaderLitTextured",
+      "coat": {
+        "ƒ.CoatTextured": {
+          "color": "[1, 1, 1, 1]",
+          "idTexture": "TextureImage|2022-04-06T20:57:10.310Z|76141"
+        }
+      }
+    }
+  },
+  "TextureImage|2022-04-06T20:57:10.310Z|76141": {
+    "ƒ.TextureImage": {
+      "url": "Sprites\\pacmans.png",
+      "type": "TextureImage",
+      "Texture": {
+        "idResource": "TextureImage|2022-04-06T20:57:10.310Z|76141",
+        "name": "Sprites\\pacmans.png",
+        "mipmap": "CRISP"
+      }
+    }
+  },
   "Graph|2022-03-17T14:08:51.514Z|30434": {
     "ƒ.Graph": {
       "name": "Game",
@@ -3753,9 +3785,23 @@
                   "ƒ.ComponentMesh": {
                     "idMesh": "MeshSphere|2022-03-22T15:27:11.514Z|93078",
                     "pivot": {
-                      "translation": "[0, 0, 0.05000000074505806]",
+                      "translation": "[0, 0, 0.10000001639127731]",
                       "rotation": "[0, 0, 0]",
-                      "scaling": "[0.9000000953674316, 0.8999999761581421, 0]"
+                      "scaling": "[1.0000001192092896, 1, 0.009999999776482582]"
+                    },
+                    "Component": {
+                      "active": true
+                    }
+                  }
+                }
+              ],
+              "ComponentTransform": [
+                {
+                  "ƒ.ComponentTransform": {
+                    "local": {
+                      "translation": "[0, 0, 0]",
+                      "rotation": "[0, 0, 0]",
+                      "scaling": "[1.0000001192092896, 1, 0.9999998211860657]"
                     },
                     "Component": {
                       "active": true
@@ -3767,31 +3813,17 @@
                 {
                   "ƒ.ComponentMaterial": {
                     "sortForAlpha": false,
-                    "clrPrimary": "[1, 0.9686274509803922, 0, 1]",
+                    "clrPrimary": "[1, 1, 1, 1]",
                     "clrSecondary": "[1, 1, 1, 1]",
                     "pivot": {
-                      "translation": "[0, 0]",
+                      "translation": "[0.41999903321266174, -0.07599999010562897]",
                       "rotation": 0,
-                      "scaling": "[1, 1]"
+                      "scaling": "[0.15199998021125793, 1.1649993658065796]"
                     },
                     "Component": {
                       "active": true
                     },
-                    "idMaterial": "Material|2022-03-22T15:27:48.792Z|96140"
-                  }
-                }
-              ],
-              "ComponentTransform": [
-                {
-                  "ƒ.ComponentTransform": {
-                    "local": {
-                      "translation": "[0, 0, 0]",
-                      "rotation": "[0, 0, 0]",
-                      "scaling": "[1.0000001192092896, 1, 1]"
-                    },
-                    "Component": {
-                      "active": true
-                    }
+                    "idMaterial": "Material|2022-04-06T20:57:21.704Z|12681"
                   }
                 }
               ]
@@ -3816,7 +3848,7 @@
                   "ƒ.ComponentAudio": {
                     "active": true,
                     "idResource": "Audio|2022-03-31T12:46:39.855Z|37941",
-                    "playing": true,
+                    "playing": false,
                     "loop": false,
                     "volume": 0.49999991059303284
                   }
@@ -3838,14 +3870,6 @@
       ],
       "idResource": "Graph|2022-03-17T14:08:51.514Z|30434",
       "type": "Graph"
-    }
-  },
-  "Audio|2022-03-31T12:47:57.681Z|37385": {
-    "ƒ.Audio": {
-      "url": "Sounds\\pacman_chomp.wav",
-      "idResource": "Audio|2022-03-31T12:47:57.681Z|37385",
-      "name": "WakaSound",
-      "type": "Audio"
     }
   }
 }

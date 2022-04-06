@@ -39,6 +39,7 @@ var Script;
 var Script;
 (function (Script) {
     var ƒ = FudgeCore;
+    var ƒAid = FudgeAid;
     window.addEventListener("load", init);
     ƒ.Debug.info("Main Program Template running!");
     let viewport;
@@ -54,8 +55,16 @@ var Script;
         right: new ƒ.Vector3(speed, 0, 0),
         left: new ƒ.Vector3(-speed, 0, 0),
     };
+    let sprite_direction = {
+        up: new ƒ.Vector3(0, 0, 90),
+        down: new ƒ.Vector3(0, 0, 270),
+        right: new ƒ.Vector3(0, 0, 0),
+        left: new ƒ.Vector3(0, 180, 0),
+    };
     let waka_sound;
     let dialog;
+    let animations;
+    let spriteNode;
     function init(_event) {
         dialog = document.querySelector("dialog");
         dialog.querySelector("h1").textContent = document.title;
@@ -70,6 +79,14 @@ var Script;
     async function startInteractiveViewport() {
         // load resources referenced in the link-tag
         await ƒ.Project.loadResourcesFromHTML();
+        // setup sprites
+        await loadSprites();
+        spriteNode = new ƒAid.NodeSprite("Sprite");
+        spriteNode.addComponent(new ƒ.ComponentTransform(new ƒ.Matrix4x4()));
+        spriteNode.setAnimation(animations["chew"]);
+        spriteNode.setFrameDirection(1);
+        spriteNode.mtxLocal.translateZ(0.6);
+        spriteNode.framerate = 15;
         ƒ.Debug.log("Project:", ƒ.Project.resources);
         // pick the graph to show
         let graph = ƒ.Project.resources["Graph|2022-03-17T14:08:51.514Z|30434"];
@@ -146,6 +163,11 @@ var Script;
         }
         if (direction_change !== "") {
             pacman.mtxLocal.translate(speed_direction[direction_change]);
+            spriteNode.mtxLocal.rotation = sprite_direction[direction_change];
+            if (pacman.findChild(spriteNode) === -1) {
+                pacman.mtxLocal.translateZ(-0.5);
+                pacman.addChild(spriteNode);
+            }
             if (!waka_sound.isPlaying) {
                 waka_sound.play(true);
             }
@@ -190,15 +212,32 @@ var Script;
                 move_direction = "";
                 direction_change = "";
                 waka_sound.play(false);
+                pacman.removeChild(spriteNode);
+                pacman.mtxLocal.translateZ(0.5);
                 console.log("Hit Wall: " + hit);
             }
             else if (hits_wall && hit === direction && ((direction === "left" || direction === "right") && pacman.mtxLocal.translation.x % 1 < 0.02)) {
                 move_direction = "";
                 direction_change = "";
                 waka_sound.play(false);
+                pacman.removeChild(spriteNode);
+                pacman.mtxLocal.translateZ(0.5);
                 console.log("Hit Wall: " + hit);
             }
         }
+    }
+    async function loadSprites() {
+        let imgSpriteSheet = new ƒ.TextureImage();
+        await imgSpriteSheet.load("Sprites/pacmans.png");
+        let spriteSheet = new ƒ.CoatTextured(ƒ.Color.CSS("white"), imgSpriteSheet);
+        generateSprites(spriteSheet);
+    }
+    function generateSprites(_spritesheet) {
+        animations = {};
+        let name = "chew";
+        let sprite = new ƒAid.SpriteSheetAnimation(name, _spritesheet);
+        sprite.generateByGrid(ƒ.Rectangle.GET(0, 0, 64, 64), 14, 64, ƒ.ORIGIN2D.CENTER, ƒ.Vector2.X(64));
+        animations[name] = sprite;
     }
 })(Script || (Script = {}));
 //# sourceMappingURL=Script.js.map

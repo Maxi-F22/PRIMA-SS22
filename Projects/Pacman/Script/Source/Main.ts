@@ -7,6 +7,7 @@ namespace Script {
 
   let viewport: ƒ.Viewport;
   let pacman: ƒ.Node;
+  let ghost: ƒ.Node;
   let pacman_moves_allowed: any = {up: true, down: false, right: true, left: false}
   let border_coords: ƒ.Vector3[] = [];
   let move_direction: string = "";
@@ -97,6 +98,10 @@ namespace Script {
         }
       }
     }
+
+    ghost = createGhost();
+    graph.addChild(ghost);
+
     ƒ.Loop.addEventListener(ƒ.EVENT.LOOP_FRAME, update);
     ƒ.Loop.start();  // start the game loop to continously draw the viewport, update the audiosystem and drive the physics i/a
   }
@@ -224,5 +229,29 @@ namespace Script {
     let sprite: ƒAid.SpriteSheetAnimation = new ƒAid.SpriteSheetAnimation(name, _spritesheet);
     sprite.generateByGrid(ƒ.Rectangle.GET(0, 0, 64, 64), 14, 64, ƒ.ORIGIN2D.CENTER, ƒ.Vector2.X(64));
     animations[name] = sprite;
+  }
+
+  function createGhost(): ƒ.Node {
+    let node: ƒ.Node = new ƒ.Node("Ghost");
+
+    let mesh: ƒ.MeshSphere = new ƒ.MeshSphere();
+    let material: ƒ.Material = new ƒ.Material("MaterialGhost", ƒ.ShaderLit, new ƒ.CoatColored());
+    
+    let cmpMesh: ƒ.ComponentMesh = new ƒ.ComponentMesh(mesh);
+    let cmpMaterial: ƒ.ComponentMaterial = new ƒ.ComponentMaterial(material);
+    let cmpTransform: ƒ.ComponentTransform = new ƒ.ComponentTransform()
+
+    node.addComponent(cmpMesh);
+    node.addComponent(cmpMaterial);
+    node.addComponent(cmpTransform);
+
+    node.mtxLocal.translateX(5);
+    node.mtxLocal.translateY(5);
+    node.mtxLocal.translateZ(0.05);
+    
+    node.mtxLocal.scaleX(0.9);
+    node.mtxLocal.scaleY(0.9);
+
+    return node;
   }
 }

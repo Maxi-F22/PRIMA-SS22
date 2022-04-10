@@ -44,6 +44,7 @@ var Script;
     ƒ.Debug.info("Main Program Template running!");
     let viewport;
     let pacman;
+    let ghost;
     let pacman_moves_allowed = { up: true, down: false, right: true, left: false };
     let border_coords = [];
     let move_direction = "";
@@ -123,6 +124,8 @@ var Script;
                 }
             }
         }
+        ghost = createGhost();
+        graph.addChild(ghost);
         ƒ.Loop.addEventListener("loopFrame" /* LOOP_FRAME */, update);
         ƒ.Loop.start(); // start the game loop to continously draw the viewport, update the audiosystem and drive the physics i/a
     }
@@ -238,6 +241,23 @@ var Script;
         let sprite = new ƒAid.SpriteSheetAnimation(name, _spritesheet);
         sprite.generateByGrid(ƒ.Rectangle.GET(0, 0, 64, 64), 14, 64, ƒ.ORIGIN2D.CENTER, ƒ.Vector2.X(64));
         animations[name] = sprite;
+    }
+    function createGhost() {
+        let node = new ƒ.Node("Ghost");
+        let mesh = new ƒ.MeshSphere();
+        let material = new ƒ.Material("MaterialGhost", ƒ.ShaderLit, new ƒ.CoatColored());
+        let cmpMesh = new ƒ.ComponentMesh(mesh);
+        let cmpMaterial = new ƒ.ComponentMaterial(material);
+        let cmpTransform = new ƒ.ComponentTransform();
+        node.addComponent(cmpMesh);
+        node.addComponent(cmpMaterial);
+        node.addComponent(cmpTransform);
+        node.mtxLocal.translateX(5);
+        node.mtxLocal.translateY(5);
+        node.mtxLocal.translateZ(0.05);
+        node.mtxLocal.scaleX(0.9);
+        node.mtxLocal.scaleY(0.9);
+        return node;
     }
 })(Script || (Script = {}));
 //# sourceMappingURL=Script.js.map

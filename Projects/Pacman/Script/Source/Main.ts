@@ -17,7 +17,8 @@ namespace Script {
   let border_coords: ƒ.Vector3[] = [];
   let move_direction: string = "";
   let direction_change: string = "";
-  let speed: number = 1/100;
+  let ghost_direction_change: string = "";
+  let speed: number = 1/60;
   let speed_direction: any = {
     up: new ƒ.Vector3(0, speed, 0),
     down: new ƒ.Vector3(0, -speed, 0),
@@ -110,9 +111,9 @@ namespace Script {
     ghosts.clyde = createGhost("clyde");
 
     graph.addChild(ghosts.pinky);
-    graph.addChild(ghosts.blinky);
-    graph.addChild(ghosts.inky);
-    graph.addChild(ghosts.clyde);
+    // graph.addChild(ghosts.blinky);
+    // graph.addChild(ghosts.inky);
+    // graph.addChild(ghosts.clyde);
 
     ƒ.Loop.addEventListener(ƒ.EVENT.LOOP_FRAME, update);
     ƒ.Loop.start();  // start the game loop to continously draw the viewport, update the audiosystem and drive the physics i/a
@@ -142,7 +143,7 @@ namespace Script {
     // }
 
     move(move_direction);
-    // moveGhost("pinky");
+    moveGhost("pinky");
     // moveGhost("blinky");
     // moveGhost("inky");
     // moveGhost("clyde");
@@ -161,6 +162,8 @@ namespace Script {
     }
     if (direction_change !== "") {
       pacman.mtxLocal.translate(speed_direction[direction_change]);
+      spriteNode.mtxLocal.recycle();
+      spriteNode.mtxLocal.translateZ(0.6);
       spriteNode.mtxLocal.rotation = sprite_direction[direction_change];
       if (pacman.findChild(spriteNode) === -1) {
         pacman.mtxLocal.translateZ(-0.5);
@@ -295,8 +298,72 @@ namespace Script {
   }
 
   function moveGhost(ghost: string): void {
-    if (direction_change !== "") {
-      ghosts[ghost].mtxLocal.translate(speed_direction[direction_change]);
+    let move = Math.floor(Math.random() * 3);
+    let direction = "";
+
+    if (move === 0) {
+      direction = "up";
     }
+    else if (move === 1) {
+      direction = "down";
+    }
+    else if (move === 2) {
+      direction = "right";
+    }
+    else if (move === 3) {
+      direction = "left";
+    }
+
+    // if (direction !== "") {
+    //   if (direction !== "" && (direction === "up" || direction === "down") && ghosts[ghost].mtxLocal.translation.x % 1 < 0.02) {
+    //     ghost_direction_change = direction;
+    //   }
+    //   else if (direction !== "" && (direction === "left" || direction === "right") && ghosts[ghost].mtxLocal.translation.y % 1 < 0.02) {
+    //     ghost_direction_change = direction;
+    //   }
+    // }
+    if (ghost_direction_change !== "") {
+      ghosts[ghost].mtxLocal.translate(speed_direction[ghost_direction_change]);
+    }
+  }
+
+  function checkHitsWallGhost(direction: string, ghost: string): void {
+    let hits_wall: boolean = false;
+    let hit_direction: string[] = [];
+    let pacman_grid: any = {up: ƒ.Vector3, down: ƒ.Vector3, right: ƒ.Vector3, left: ƒ.Vector3};
+    
+    pacman_grid.up = new ƒ.Vector3(Math.round(ghosts[ghost].mtxLocal.translation.x), Math.round(ghosts[ghost].mtxLocal.translation.y) + 1, 0);
+    pacman_grid.down = new ƒ.Vector3(Math.round(ghosts[ghost].mtxLocal.translation.x), Math.round(ghosts[ghost].mtxLocal.translation.y) - 1, 0);
+    pacman_grid.right = new ƒ.Vector3(Math.round(ghosts[ghost].mtxLocal.translation.x) + 1, Math.round(ghosts[ghost].mtxLocal.translation.y), 0);
+    pacman_grid.left = new ƒ.Vector3(Math.round(ghosts[ghost].mtxLocal.translation.x) - 1, Math.round(ghosts[ghost].mtxLocal.translation.y), 0);
+    
+    for (let border of border_coords) {
+      if (border.equals(pacman_grid.up)) {
+        hits_wall = true;
+        hit_direction.push("up");
+      }
+      if (border.equals(pacman_grid.down)) {
+        hits_wall = true;
+        hit_direction.push("down");
+      }
+      if (border.equals(pacman_grid.right)) {
+        hits_wall = true;
+        hit_direction.push("right");
+      }
+      if (border.equals(pacman_grid.left)) {
+        hits_wall = true;
+        hit_direction.push("left");
+      }
+    }
+
+    for (let hit of hit_direction) {
+      if (hits_wall && hit === direction && ((direction === "up" || direction === "down") && ghosts[ghost].mtxLocal.translation.y % 1 < 0.02)) {
+        ghost_direction_change = "";
+      }
+      else if (hits_wall && hit === direction && ((direction === "left" || direction === "right") && ghosts[ghost].mtxLocal.translation.x % 1 < 0.02)) {
+        ghost_direction_change = "";
+      }
+    }
+
   }
 }

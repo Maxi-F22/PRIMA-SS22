@@ -7,7 +7,12 @@ namespace Script {
 
   let viewport: ƒ.Viewport;
   let pacman: ƒ.Node;
-  let ghost: ƒ.Node;
+  let ghosts: any = {
+    pinky: new ƒ.Node("pinky"),
+    blinky: new ƒ.Node("blinky"),
+    inky: new ƒ.Node("inky"),
+    clyde: new ƒ.Node("clyde"),
+  }
   let pacman_moves_allowed: any = {up: true, down: false, right: true, left: false}
   let border_coords: ƒ.Vector3[] = [];
   let move_direction: string = "";
@@ -55,7 +60,7 @@ namespace Script {
     spriteNode.setAnimation(<ƒAid.SpriteSheetAnimation>animations["chew"]);
     spriteNode.setFrameDirection(1);
     spriteNode.mtxLocal.translateZ(0.6);
-    spriteNode.framerate = 15;
+    spriteNode.framerate = 30;
 
     ƒ.Debug.log("Project:", ƒ.Project.resources);
     // pick the graph to show
@@ -99,8 +104,15 @@ namespace Script {
       }
     }
 
-    ghost = createGhost();
-    graph.addChild(ghost);
+    ghosts.pinky = createGhost("pinky");
+    ghosts.blinky = createGhost("blinky");
+    ghosts.inky = createGhost("inky");
+    ghosts.clyde = createGhost("clyde");
+
+    graph.addChild(ghosts.pinky);
+    graph.addChild(ghosts.blinky);
+    graph.addChild(ghosts.inky);
+    graph.addChild(ghosts.clyde);
 
     ƒ.Loop.addEventListener(ƒ.EVENT.LOOP_FRAME, update);
     ƒ.Loop.start();  // start the game loop to continously draw the viewport, update the audiosystem and drive the physics i/a
@@ -130,6 +142,10 @@ namespace Script {
     // }
 
     move(move_direction);
+    // moveGhost("pinky");
+    // moveGhost("blinky");
+    // moveGhost("inky");
+    // moveGhost("clyde");
     viewport.draw();
   }
 
@@ -231,7 +247,7 @@ namespace Script {
     animations[name] = sprite;
   }
 
-  function createGhost(): ƒ.Node {
+  function createGhost(ghost: string): ƒ.Node {
     let node: ƒ.Node = new ƒ.Node("Ghost");
 
     let mesh: ƒ.MeshSphere = new ƒ.MeshSphere();
@@ -239,19 +255,48 @@ namespace Script {
     
     let cmpMesh: ƒ.ComponentMesh = new ƒ.ComponentMesh(mesh);
     let cmpMaterial: ƒ.ComponentMaterial = new ƒ.ComponentMaterial(material);
-    let cmpTransform: ƒ.ComponentTransform = new ƒ.ComponentTransform()
+    let cmpTransform: ƒ.ComponentTransform = new ƒ.ComponentTransform();
 
     node.addComponent(cmpMesh);
     node.addComponent(cmpMaterial);
     node.addComponent(cmpTransform);
 
-    node.mtxLocal.translateX(5);
-    node.mtxLocal.translateY(5);
-    node.mtxLocal.translateZ(0.05);
+    switch (ghost) {
+      case "pinky":
+        cmpMaterial.clrPrimary = new ƒ.Color(1, 0.72, 1, 1);
+        node.mtxLocal.translateX(5);
+        node.mtxLocal.translateY(5);
+        node.mtxLocal.translateZ(0.05);
+        break;
+      case "blinky":
+        cmpMaterial.clrPrimary = new ƒ.Color(1, 0, 0, 1);
+        node.mtxLocal.translateX(4);
+        node.mtxLocal.translateY(5);
+        node.mtxLocal.translateZ(0.05);
+        break;
+      case "inky":
+        cmpMaterial.clrPrimary = new ƒ.Color(0, 1, 1, 1);
+        node.mtxLocal.translateX(3);
+        node.mtxLocal.translateY(5);
+        node.mtxLocal.translateZ(0.05);
+        break;
+      case "clyde":
+        cmpMaterial.clrPrimary = new ƒ.Color(1, 0.72, 0.32, 1);
+        node.mtxLocal.translateX(2);
+        node.mtxLocal.translateY(5);
+        node.mtxLocal.translateZ(0.05);
+        break;
+    }
     
     node.mtxLocal.scaleX(0.9);
     node.mtxLocal.scaleY(0.9);
 
     return node;
+  }
+
+  function moveGhost(ghost: string): void {
+    if (direction_change !== "") {
+      ghosts[ghost].mtxLocal.translate(speed_direction[direction_change]);
+    }
   }
 }

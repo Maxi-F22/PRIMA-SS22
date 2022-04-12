@@ -44,7 +44,12 @@ var Script;
     ƒ.Debug.info("Main Program Template running!");
     let viewport;
     let pacman;
-    let ghost;
+    let ghosts = {
+        pinky: new ƒ.Node("pinky"),
+        blinky: new ƒ.Node("blinky"),
+        inky: new ƒ.Node("inky"),
+        clyde: new ƒ.Node("clyde"),
+    };
     let pacman_moves_allowed = { up: true, down: false, right: true, left: false };
     let border_coords = [];
     let move_direction = "";
@@ -87,7 +92,7 @@ var Script;
         spriteNode.setAnimation(animations["chew"]);
         spriteNode.setFrameDirection(1);
         spriteNode.mtxLocal.translateZ(0.6);
-        spriteNode.framerate = 15;
+        spriteNode.framerate = 30;
         ƒ.Debug.log("Project:", ƒ.Project.resources);
         // pick the graph to show
         let graph = ƒ.Project.resources["Graph|2022-03-17T14:08:51.514Z|30434"];
@@ -124,8 +129,14 @@ var Script;
                 }
             }
         }
-        ghost = createGhost();
-        graph.addChild(ghost);
+        ghosts.pinky = createGhost("pinky");
+        ghosts.blinky = createGhost("blinky");
+        ghosts.inky = createGhost("inky");
+        ghosts.clyde = createGhost("clyde");
+        graph.addChild(ghosts.pinky);
+        graph.addChild(ghosts.blinky);
+        graph.addChild(ghosts.inky);
+        graph.addChild(ghosts.clyde);
         ƒ.Loop.addEventListener("loopFrame" /* LOOP_FRAME */, update);
         ƒ.Loop.start(); // start the game loop to continously draw the viewport, update the audiosystem and drive the physics i/a
     }
@@ -152,6 +163,10 @@ var Script;
         //   direction_change = "";
         // }
         move(move_direction);
+        // moveGhost("pinky");
+        // moveGhost("blinky");
+        // moveGhost("inky");
+        // moveGhost("clyde");
         viewport.draw();
     }
     function move(direction) {
@@ -242,7 +257,7 @@ var Script;
         sprite.generateByGrid(ƒ.Rectangle.GET(0, 0, 64, 64), 14, 64, ƒ.ORIGIN2D.CENTER, ƒ.Vector2.X(64));
         animations[name] = sprite;
     }
-    function createGhost() {
+    function createGhost(ghost) {
         let node = new ƒ.Node("Ghost");
         let mesh = new ƒ.MeshSphere();
         let material = new ƒ.Material("MaterialGhost", ƒ.ShaderLit, new ƒ.CoatColored());
@@ -252,12 +267,40 @@ var Script;
         node.addComponent(cmpMesh);
         node.addComponent(cmpMaterial);
         node.addComponent(cmpTransform);
-        node.mtxLocal.translateX(5);
-        node.mtxLocal.translateY(5);
-        node.mtxLocal.translateZ(0.05);
+        switch (ghost) {
+            case "pinky":
+                cmpMaterial.clrPrimary = new ƒ.Color(1, 0.72, 1, 1);
+                node.mtxLocal.translateX(5);
+                node.mtxLocal.translateY(5);
+                node.mtxLocal.translateZ(0.05);
+                break;
+            case "blinky":
+                cmpMaterial.clrPrimary = new ƒ.Color(1, 0, 0, 1);
+                node.mtxLocal.translateX(4);
+                node.mtxLocal.translateY(5);
+                node.mtxLocal.translateZ(0.05);
+                break;
+            case "inky":
+                cmpMaterial.clrPrimary = new ƒ.Color(0, 1, 1, 1);
+                node.mtxLocal.translateX(3);
+                node.mtxLocal.translateY(5);
+                node.mtxLocal.translateZ(0.05);
+                break;
+            case "clyde":
+                cmpMaterial.clrPrimary = new ƒ.Color(1, 0.72, 0.32, 1);
+                node.mtxLocal.translateX(2);
+                node.mtxLocal.translateY(5);
+                node.mtxLocal.translateZ(0.05);
+                break;
+        }
         node.mtxLocal.scaleX(0.9);
         node.mtxLocal.scaleY(0.9);
         return node;
+    }
+    function moveGhost(ghost) {
+        if (direction_change !== "") {
+            ghosts[ghost].mtxLocal.translate(speed_direction[direction_change]);
+        }
     }
 })(Script || (Script = {}));
 //# sourceMappingURL=Script.js.map

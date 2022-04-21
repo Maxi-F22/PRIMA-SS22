@@ -7,12 +7,18 @@ namespace Script {
 
   let viewport: ƒ.Viewport;
   let pacman: ƒ.Node;
-  let ghost: ƒ.Node;
+  let ghosts: any = {
+    pinky: new ƒ.Node("pinky"),
+    blinky: new ƒ.Node("blinky"),
+    inky: new ƒ.Node("inky"),
+    clyde: new ƒ.Node("clyde"),
+  }
   let pacman_moves_allowed: any = {up: true, down: false, right: true, left: false}
   let border_coords: ƒ.Vector3[] = [];
   let move_direction: string = "";
   let direction_change: string = "";
-  let speed: number = 1/100;
+  let ghost_direction_change: string = "";
+  let speed: number = 1/60;
   let speed_direction: any = {
     up: new ƒ.Vector3(0, speed, 0),
     down: new ƒ.Vector3(0, -speed, 0),
@@ -55,7 +61,7 @@ namespace Script {
     spriteNode.setAnimation(<ƒAid.SpriteSheetAnimation>animations["chew"]);
     spriteNode.setFrameDirection(1);
     spriteNode.mtxLocal.translateZ(0.6);
-    spriteNode.framerate = 15;
+    spriteNode.framerate = 30;
 
     ƒ.Debug.log("Project:", ƒ.Project.resources);
     // pick the graph to show
@@ -99,8 +105,15 @@ namespace Script {
       }
     }
 
-    ghost = createGhost();
-    graph.addChild(ghost);
+    ghosts.pinky = createGhost("pinky");
+    ghosts.blinky = createGhost("blinky");
+    ghosts.inky = createGhost("inky");
+    ghosts.clyde = createGhost("clyde");
+
+    graph.addChild(ghosts.pinky);
+    // graph.addChild(ghosts.blinky);
+    // graph.addChild(ghosts.inky);
+    // graph.addChild(ghosts.clyde);
 
     ƒ.Loop.addEventListener(ƒ.EVENT.LOOP_FRAME, update);
     ƒ.Loop.start();  // start the game loop to continously draw the viewport, update the audiosystem and drive the physics i/a
@@ -130,6 +143,10 @@ namespace Script {
     // }
 
     move(move_direction);
+    moveGhost("pinky");
+    // moveGhost("blinky");
+    // moveGhost("inky");
+    // moveGhost("clyde");
     viewport.draw();
   }
 
@@ -145,6 +162,8 @@ namespace Script {
     }
     if (direction_change !== "") {
       pacman.mtxLocal.translate(speed_direction[direction_change]);
+      spriteNode.mtxLocal.recycle();
+      spriteNode.mtxLocal.translateZ(0.6);
       spriteNode.mtxLocal.rotation = sprite_direction[direction_change];
       if (pacman.findChild(spriteNode) === -1) {
         pacman.mtxLocal.translateZ(-0.5);
@@ -231,7 +250,7 @@ namespace Script {
     animations[name] = sprite;
   }
 
-  function createGhost(): ƒ.Node {
+  function createGhost(ghost: string): ƒ.Node {
     let node: ƒ.Node = new ƒ.Node("Ghost");
 
     let mesh: ƒ.MeshSphere = new ƒ.MeshSphere();
@@ -239,19 +258,112 @@ namespace Script {
     
     let cmpMesh: ƒ.ComponentMesh = new ƒ.ComponentMesh(mesh);
     let cmpMaterial: ƒ.ComponentMaterial = new ƒ.ComponentMaterial(material);
-    let cmpTransform: ƒ.ComponentTransform = new ƒ.ComponentTransform()
+    let cmpTransform: ƒ.ComponentTransform = new ƒ.ComponentTransform();
 
     node.addComponent(cmpMesh);
     node.addComponent(cmpMaterial);
     node.addComponent(cmpTransform);
 
-    node.mtxLocal.translateX(5);
-    node.mtxLocal.translateY(5);
-    node.mtxLocal.translateZ(0.05);
+    switch (ghost) {
+      case "pinky":
+        cmpMaterial.clrPrimary = new ƒ.Color(1, 0.72, 1, 1);
+        node.mtxLocal.translateX(5);
+        node.mtxLocal.translateY(5);
+        node.mtxLocal.translateZ(0.05);
+        break;
+      case "blinky":
+        cmpMaterial.clrPrimary = new ƒ.Color(1, 0, 0, 1);
+        node.mtxLocal.translateX(4);
+        node.mtxLocal.translateY(5);
+        node.mtxLocal.translateZ(0.05);
+        break;
+      case "inky":
+        cmpMaterial.clrPrimary = new ƒ.Color(0, 1, 1, 1);
+        node.mtxLocal.translateX(3);
+        node.mtxLocal.translateY(5);
+        node.mtxLocal.translateZ(0.05);
+        break;
+      case "clyde":
+        cmpMaterial.clrPrimary = new ƒ.Color(1, 0.72, 0.32, 1);
+        node.mtxLocal.translateX(2);
+        node.mtxLocal.translateY(5);
+        node.mtxLocal.translateZ(0.05);
+        break;
+    }
     
     node.mtxLocal.scaleX(0.9);
     node.mtxLocal.scaleY(0.9);
 
     return node;
+  }
+
+  function moveGhost(ghost: string): void {
+    let move = Math.floor(Math.random() * 3);
+    let direction = "";
+
+    if (move === 0) {
+      direction = "up";
+    }
+    else if (move === 1) {
+      direction = "down";
+    }
+    else if (move === 2) {
+      direction = "right";
+    }
+    else if (move === 3) {
+      direction = "left";
+    }
+
+    // if (direction !== "") {
+    //   if (direction !== "" && (direction === "up" || direction === "down") && ghosts[ghost].mtxLocal.translation.x % 1 < 0.02) {
+    //     ghost_direction_change = direction;
+    //   }
+    //   else if (direction !== "" && (direction === "left" || direction === "right") && ghosts[ghost].mtxLocal.translation.y % 1 < 0.02) {
+    //     ghost_direction_change = direction;
+    //   }
+    // }
+    if (ghost_direction_change !== "") {
+      ghosts[ghost].mtxLocal.translate(speed_direction[ghost_direction_change]);
+    }
+  }
+
+  function checkHitsWallGhost(direction: string, ghost: string): void {
+    let hits_wall: boolean = false;
+    let hit_direction: string[] = [];
+    let pacman_grid: any = {up: ƒ.Vector3, down: ƒ.Vector3, right: ƒ.Vector3, left: ƒ.Vector3};
+    
+    pacman_grid.up = new ƒ.Vector3(Math.round(ghosts[ghost].mtxLocal.translation.x), Math.round(ghosts[ghost].mtxLocal.translation.y) + 1, 0);
+    pacman_grid.down = new ƒ.Vector3(Math.round(ghosts[ghost].mtxLocal.translation.x), Math.round(ghosts[ghost].mtxLocal.translation.y) - 1, 0);
+    pacman_grid.right = new ƒ.Vector3(Math.round(ghosts[ghost].mtxLocal.translation.x) + 1, Math.round(ghosts[ghost].mtxLocal.translation.y), 0);
+    pacman_grid.left = new ƒ.Vector3(Math.round(ghosts[ghost].mtxLocal.translation.x) - 1, Math.round(ghosts[ghost].mtxLocal.translation.y), 0);
+    
+    for (let border of border_coords) {
+      if (border.equals(pacman_grid.up)) {
+        hits_wall = true;
+        hit_direction.push("up");
+      }
+      if (border.equals(pacman_grid.down)) {
+        hits_wall = true;
+        hit_direction.push("down");
+      }
+      if (border.equals(pacman_grid.right)) {
+        hits_wall = true;
+        hit_direction.push("right");
+      }
+      if (border.equals(pacman_grid.left)) {
+        hits_wall = true;
+        hit_direction.push("left");
+      }
+    }
+
+    for (let hit of hit_direction) {
+      if (hits_wall && hit === direction && ((direction === "up" || direction === "down") && ghosts[ghost].mtxLocal.translation.y % 1 < 0.02)) {
+        ghost_direction_change = "";
+      }
+      else if (hits_wall && hit === direction && ((direction === "left" || direction === "right") && ghosts[ghost].mtxLocal.translation.x % 1 < 0.02)) {
+        ghost_direction_change = "";
+      }
+    }
+
   }
 }

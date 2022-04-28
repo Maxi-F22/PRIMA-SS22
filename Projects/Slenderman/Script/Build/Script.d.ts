@@ -1,11 +1,24 @@
 declare namespace Script {
     import ƒ = FudgeCore;
-    class CustomComponentScript extends ƒ.ComponentScript {
+    let ground: ƒ.Node;
+}
+declare namespace Script {
+    import ƒ = FudgeCore;
+    class SetToGroundMesh extends ƒ.ComponentScript {
         static readonly iSubclass: number;
-        message: string;
         constructor();
         hndEvent: (_event: Event) => void;
+        setPos: (_event: Event) => void;
     }
 }
 declare namespace Script {
+    import ƒ = FudgeCore;
+    class SlenderManMove extends ƒ.ComponentScript {
+        static readonly iSubclass: number;
+        private timeToChange;
+        private direction;
+        constructor();
+        hndEvent: (_event: Event) => void;
+        move: (_event: Event) => void;
+    }
 }

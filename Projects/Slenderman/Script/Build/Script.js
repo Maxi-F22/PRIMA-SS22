@@ -6,6 +6,7 @@ var Script;
     let viewport;
     let avatar;
     let cmpCamera;
+    let cmpLight;
     let speedRotY = -0.1;
     let speedRotX = 0.1;
     let rotationX = 0;
@@ -17,6 +18,7 @@ var Script;
         let graph = viewport.getBranch();
         avatar = graph.getChildrenByName("Avatar")[0];
         cmpCamera = avatar.getChild(0).getComponent(ƒ.ComponentCamera);
+        cmpLight = avatar.getChild(1).getComponent(ƒ.ComponentLight);
         Script.ground = graph.getChildrenByName("Environment")[0].getChildrenByName("Ground")[0];
         viewport.camera = cmpCamera;
         let canvas = viewport.getCanvas();
@@ -26,7 +28,7 @@ var Script;
         ƒ.Loop.start(); // start the game loop to continously draw the viewport, update the audiosystem and drive the physics i/a
     }
     function update(_event) {
-        // ƒ.Physics.simulate();  // if physics is included and used
+        ƒ.Physics.simulate(); // if physics is included and used
         controlWalk();
         controlStrave();
         setToGround();
@@ -55,6 +57,7 @@ var Script;
         rotationX += (_event.movementY * speedRotX);
         rotationX = Math.min(80, Math.max(-80, rotationX));
         cmpCamera.mtxPivot.rotation = ƒ.Vector3.X(rotationX);
+        cmpLight.mtxPivot.rotation = ƒ.Vector3.X(rotationX);
     }
 })(Script || (Script = {}));
 var Script;
@@ -143,9 +146,12 @@ var Script;
             }
         };
         move = (_event) => {
+            if (this.node.mtxLocal.translation.x > 10 || this.node.mtxLocal.translation.x < -10 || this.node.mtxLocal.translation.z > 10 || this.node.mtxLocal.translation.z < -10) {
+                return;
+            }
             this.node.mtxLocal.translate(ƒ.Vector3.SCALE(this.direction, ƒ.Loop.timeFrameGame / 500));
             this.node.mtxLocal.translateY(0.5);
-            if (this.timeToChange > ƒ.Time.game.get() || this.node.mtxLocal.translation.x > 29 || this.node.mtxLocal.translation.x < -29 || this.node.mtxLocal.translation.z > 29 || this.node.mtxLocal.translation.z < -29) {
+            if (this.timeToChange > ƒ.Time.game.get()) {
                 return;
             }
             this.timeToChange = ƒ.Time.game.get() + 3000;

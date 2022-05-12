@@ -2,12 +2,12 @@ namespace Script {
   import ƒ = FudgeCore;
   ƒ.Project.registerScriptNamespace(Script);  // Register the namespace to FUDGE for serialization
 
-  export class SlenderManMove extends ƒ.ComponentScript {
+  export class CustomComponentScript extends ƒ.ComponentScript {
     // Register the script as component for use in the editor via drag&drop
-    public static readonly iSubclass: number = ƒ.Component.registerSubclass(SlenderManMove);
+    public static readonly iSubclass: number = ƒ.Component.registerSubclass(CustomComponentScript);
     // Properties may be mutated by users in the editor via the automatically created user interface
-    private timeToChange: number = 0;
-    private direction: ƒ.Vector3 = ƒ.Vector3.ZERO();
+    public message: string = "CustomComponentScript added to ";
+
 
     constructor() {
       super();
@@ -26,7 +26,7 @@ namespace Script {
     public hndEvent = (_event: Event): void => {
       switch (_event.type) {
         case ƒ.EVENT.COMPONENT_ADD:
-          this.node.addEventListener(ƒ.EVENT.RENDER_PREPARE, this.move);
+          ƒ.Debug.log(this.message, this.node);
           break;
         case ƒ.EVENT.COMPONENT_REMOVE:
           this.removeEventListener(ƒ.EVENT.COMPONENT_ADD, this.hndEvent);
@@ -36,19 +36,6 @@ namespace Script {
           // if deserialized the node is now fully reconstructed and access to all its components and children is possible
           break;
       }
-    }
-
-    public move = (_event: Event): void => {
-      if (this.node.mtxLocal.translation.x > 10 || this.node.mtxLocal.translation.x < -10 || this.node.mtxLocal.translation.z > 10 || this.node.mtxLocal.translation.z < -10) {
-        return;
-      }
-      this.node.mtxLocal.translate(ƒ.Vector3.SCALE(this.direction, ƒ.Loop.timeFrameGame / 500));
-      this.node.mtxLocal.translateY(0.5);
-      if (this.timeToChange > ƒ.Time.game.get()) {
-        return;
-      }
-      this.timeToChange = ƒ.Time.game.get() + 3000;
-      this.direction = ƒ.Random.default.getVector3(new ƒ.Vector3(-1,0,-1), new ƒ.Vector3(1,0,1));
     }
 
     // protected reduceMutator(_mutator: ƒ.Mutator): void {

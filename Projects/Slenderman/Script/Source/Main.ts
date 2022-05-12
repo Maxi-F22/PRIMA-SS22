@@ -6,6 +6,7 @@ namespace Script {
   let viewport: ƒ.Viewport;
   let avatar: ƒ.Node;
   let cmpCamera: ƒ.ComponentCamera;
+  let cmpLight: ƒ.ComponentLight;
   let speedRotY: number = -0.1;
   let speedRotX: number = 0.1;
   let rotationX: number = 0;
@@ -20,6 +21,7 @@ namespace Script {
     let graph: ƒ.Node = viewport.getBranch();
     avatar = graph.getChildrenByName("Avatar")[0];
     cmpCamera = avatar.getChild(0).getComponent(ƒ.ComponentCamera);
+    cmpLight = avatar.getChild(1).getComponent(ƒ.ComponentLight);
     ground = graph.getChildrenByName("Environment")[0].getChildrenByName("Ground")[0];
     viewport.camera = cmpCamera;
     
@@ -32,7 +34,7 @@ namespace Script {
   }
 
   function update(_event: Event): void {
-    // ƒ.Physics.simulate();  // if physics is included and used
+    ƒ.Physics.simulate();  // if physics is included and used
     controlWalk();
     controlStrave();
     setToGround();
@@ -65,5 +67,6 @@ namespace Script {
     rotationX += (_event.movementY * speedRotX);
     rotationX = Math.min(80, Math.max(-80, rotationX));
     cmpCamera.mtxPivot.rotation = ƒ.Vector3.X(rotationX);
+    cmpLight.mtxPivot.rotation = ƒ.Vector3.X(rotationX);
   }
 }

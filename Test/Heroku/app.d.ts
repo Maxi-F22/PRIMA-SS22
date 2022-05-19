@@ -1,1 +1,1 @@
-declare const PORT: string | number;
+export {};

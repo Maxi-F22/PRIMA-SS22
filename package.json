@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node Test/Heroku/app.js remote"
+    "start": "node Server.js"
   },
   "repository": {
     "type": "git",

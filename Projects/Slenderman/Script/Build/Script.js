@@ -2,6 +2,21 @@
 var Script;
 (function (Script) {
     var ƒ = FudgeCore;
+    var ƒUi = FudgeUserInterface;
+    class GameState extends ƒ.Mutable {
+        battery = 1;
+        constructor() {
+            super();
+            let domVui = document.querySelector("div#vui");
+            console.log(new ƒUi.Controller(this, domVui));
+        }
+        reduceMutator(_mutator) { }
+    }
+    Script.GameState = GameState;
+})(Script || (Script = {}));
+var Script;
+(function (Script) {
+    var ƒ = FudgeCore;
     ƒ.Debug.info("Main Program Template running!");
     let viewport;
     let avatar;
@@ -11,9 +26,10 @@ var Script;
     let speedRotX = 0.1;
     let rotationX = 0;
     let cntWalk = new ƒ.Control("cntWalk", 6, 0 /* PROPORTIONAL */);
-    // cntWalk.setDelay(500);
+    let gameState;
+    let config;
     document.addEventListener("interactiveViewportStarted", start);
-    function start(_event) {
+    async function start(_event) {
         viewport = _event.detail;
         let graph = viewport.getBranch();
         avatar = graph.getChildrenByName("Avatar")[0];
@@ -21,9 +37,14 @@ var Script;
         cmpLight = avatar.getChild(1).getComponent(ƒ.ComponentLight);
         Script.ground = graph.getChildrenByName("Environment")[0].getChildrenByName("Ground")[0];
         viewport.camera = cmpCamera;
+        graph.addEventListener("toggleTorch", hndToggleTorch);
+        gameState = new Script.GameState();
+        let response = await fetch("config.json");
+        config = await response.json();
         let canvas = viewport.getCanvas();
         canvas.addEventListener("pointermove", hndPointerMove);
         canvas.requestPointerLock();
+        document.addEventListener("keydown", hndKeydown);
         ƒ.Loop.addEventListener("loopFrame" /* LOOP_FRAME */, update);
         ƒ.Loop.start(); // start the game loop to continously draw the viewport, update the audiosystem and drive the physics i/a
     }
@@ -34,6 +55,18 @@ var Script;
         setToGround();
         viewport.draw();
         ƒ.AudioManager.default.update();
+        gameState.battery -= config["drain"];
+    }
+    function hndKeydown(_event) {
+        if (_event.code != ƒ.KEYBOARD_CODE.SPACE) {
+            return;
+        }
+        let torch = avatar.getChildrenByName("Torch")[0];
+        torch.activate(!torch.isActive);
+        torch.dispatchEvent(new Event("toggleTorch", { bubbles: true }));
+    }
+    function hndToggleTorch(_event) {
+        console.log(_event);
     }
     function controlWalk() {
         let inputWalk = ƒ.Keyboard.mapToTrit([ƒ.KEYBOARD_CODE.W], [ƒ.KEYBOARD_CODE.S]);

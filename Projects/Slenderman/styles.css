@@ -14,3 +14,59 @@ canvas.fullscreen {
   width: 100vw; 
   height: 100vh; 
 }
+
+#vui #battery {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  border-radius: 10px;
+  padding: 3px;
+}
+
+#vui #battery svg {
+  fill: limegreen;
+  width: 30px;
+}
+
+#vui #pages {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  border-radius: 10px;
+  padding: 3px;
+}
+
+#vui #pages input {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.5em;
+  vertical-align: middle;
+  height: 30px;
+  width: 20px;
+}
+
+#vui #pages span {
+  color: white;
+  font-size: 1.5em;
+  vertical-align: middle;
+  height: 30px;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+#vui #pages svg {
+  width: 30px;
+  vertical-align: middle;
+}
+
+/* Chrome, Safari, Edge, Opera */
+#vui #pages input::-webkit-outer-spin-button,
+#vui #pages input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+#vui #pages input[type=number] {
+  -moz-appearance: textfield;
+}

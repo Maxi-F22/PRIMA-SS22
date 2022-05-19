@@ -2,6 +2,11 @@ namespace Script {
   import ƒ = FudgeCore;
   ƒ.Debug.info("Main Program Template running!");
 
+  interface Config {
+    drain: number;
+    [key: string]: number | string | boolean | Config;
+  }
+
   export let ground: ƒ.Node;
   let viewport: ƒ.Viewport;
   let avatar: ƒ.Node;
@@ -11,12 +16,15 @@ namespace Script {
   let speedRotX: number = 0.1;
   let rotationX: number = 0;
   let cntWalk: ƒ.Control = new ƒ.Control("cntWalk", 6, ƒ.CONTROL_TYPE.PROPORTIONAL);
-  // cntWalk.setDelay(500);
-  document.addEventListener("interactiveViewportStarted", <EventListener>start);
+  let gameState: GameState;
+
+  let config: Config;
+
+  document.addEventListener("interactiveViewportStarted", <EventListener><unknown>start);
 
 
 
-  function start(_event: CustomEvent): void {
+  async function start(_event: CustomEvent): Promise<void> {
     viewport = _event.detail;
     let graph: ƒ.Node = viewport.getBranch();
     avatar = graph.getChildrenByName("Avatar")[0];
@@ -24,10 +32,18 @@ namespace Script {
     cmpLight = avatar.getChild(1).getComponent(ƒ.ComponentLight);
     ground = graph.getChildrenByName("Environment")[0].getChildrenByName("Ground")[0];
     viewport.camera = cmpCamera;
+
+    graph.addEventListener("toggleTorch", hndToggleTorch);
     
+    gameState = new GameState();
+    let response: Response = await fetch("config.json");
+    config = await response.json();
+
     let canvas: HTMLCanvasElement = viewport.getCanvas();
     canvas.addEventListener("pointermove", hndPointerMove);
     canvas.requestPointerLock();
+
+    document.addEventListener("keydown", hndKeydown);
 
     ƒ.Loop.addEventListener(ƒ.EVENT.LOOP_FRAME, update);
     ƒ.Loop.start();  // start the game loop to continously draw the viewport, update the audiosystem and drive the physics i/a
@@ -40,6 +56,21 @@ namespace Script {
     setToGround();
     viewport.draw();
     ƒ.AudioManager.default.update();
+    gameState.battery -= config["drain"];
+  }
+
+  function hndKeydown(_event: KeyboardEvent): void {
+    if (_event.code != ƒ.KEYBOARD_CODE.SPACE) {
+      return;
+    }
+    let torch: ƒ.Node = avatar.getChildrenByName("Torch")[0];
+    torch.activate(!torch.isActive);
+
+    torch.dispatchEvent(new Event("toggleTorch", {bubbles: true}));
+  }
+
+  function hndToggleTorch(_event: Event): void {
+    console.log(_event);
   }
 
   function controlWalk(): void {

@@ -1,6 +1,3 @@
-import * as Http from "http";
-
-
 let port = Number(process.env.PORT);
 
 if (!port) {
@@ -10,10 +7,5 @@ if (!port) {
 startServer(port);
 
 function startServer(_port) {
-    let server = Http.createServer();
-    server.addListener("listening", handleListen);
-}
-
-function handleListen() {
-    console.log("Listening");
+    console.log("Listening:" + _port);
 }

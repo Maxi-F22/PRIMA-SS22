@@ -1,0 +1,19 @@
+{
+  "name": "prima-ss22",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node Test/Heroku/app.js remote"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Maxi-F22/PRIMA-SS22.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Maxi-F22/PRIMA-SS22/issues"
+  },
+  "homepage": "https://github.com/Maxi-F22/PRIMA-SS22#readme"
+}

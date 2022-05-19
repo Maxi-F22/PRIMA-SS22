@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/Maxi-F22/PRIMA-SS22/issues"
   },
-  "homepage": "https://github.com/Maxi-F22/PRIMA-SS22#readme"
+  "homepage": "https://github.com/Maxi-F22/PRIMA-SS22#readme",
+  "devDependencies": {
+    "@types/node": "^17.0.34"
+  }
 }

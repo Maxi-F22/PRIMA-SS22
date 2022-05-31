@@ -5,6 +5,7 @@ var Script;
     ƒ.Debug.info("Main Program Template running!");
     let viewport;
     let avatar;
+    let bird;
     let cmpCamera;
     let cmpLight;
     let speedRotY = -0.1;
@@ -17,6 +18,7 @@ var Script;
         viewport = _event.detail;
         let graph = viewport.getBranch();
         avatar = graph.getChildrenByName("Avatar")[0];
+        bird = graph.getChildrenByName("Environment")[0].getChildrenByName("Bird")[0];
         cmpCamera = avatar.getChild(0).getComponent(ƒ.ComponentCamera);
         cmpLight = avatar.getChild(1).getComponent(ƒ.ComponentLight);
         Script.ground = graph.getChildrenByName("Environment")[0].getChildrenByName("Ground")[0];
@@ -26,6 +28,8 @@ var Script;
         canvas.requestPointerLock();
         ƒ.Loop.addEventListener("loopFrame" /* LOOP_FRAME */, update);
         ƒ.Loop.start(); // start the game loop to continously draw the viewport, update the audiosystem and drive the physics i/a
+        initAnim();
+        document.body.addEventListener("change", initAnim);
     }
     function update(_event) {
         ƒ.Physics.simulate(); // if physics is included and used
@@ -58,6 +62,36 @@ var Script;
         rotationX = Math.min(80, Math.max(-80, rotationX));
         cmpCamera.mtxPivot.rotation = ƒ.Vector3.X(rotationX);
         cmpLight.mtxPivot.rotation = ƒ.Vector3.X(rotationX);
+    }
+    function initAnim() {
+        let animseq = new ƒ.AnimationSequence();
+        animseq.addKey(new ƒ.AnimationKey(0, 5));
+        animseq.addKey(new ƒ.AnimationKey(6000, -5));
+        animseq.addKey(new ƒ.AnimationKey(12000, 5));
+        let animStructure = {
+            components: {
+                ComponentTransform: [
+                    {
+                        "ƒ.ComponentTransform": {
+                            mtxLocal: {
+                                translation: {
+                                    x: animseq,
+                                    z: animseq
+                                }
+                            }
+                        }
+                    }
+                ]
+            }
+        };
+        let animation = new ƒ.Animation("testAnimation", animStructure, 60);
+        let cmpAnimator = new ƒ.ComponentAnimator(animation, ƒ.ANIMATION_PLAYMODE.LOOP, ƒ.ANIMATION_PLAYBACK.FRAMEBASED);
+        cmpAnimator.scale = 1;
+        if (bird.getComponent(ƒ.ComponentAnimator)) {
+            bird.removeComponent(bird.getComponent(ƒ.ComponentAnimator));
+        }
+        bird.addComponent(cmpAnimator);
+        cmpAnimator.activate(true);
     }
 })(Script || (Script = {}));
 var Script;

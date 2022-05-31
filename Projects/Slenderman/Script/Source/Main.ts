@@ -5,6 +5,7 @@ namespace Script {
   export let ground: ƒ.Node;
   let viewport: ƒ.Viewport;
   let avatar: ƒ.Node;
+  let bird: ƒ.Node;
   let cmpCamera: ƒ.ComponentCamera;
   let cmpLight: ƒ.ComponentLight;
   let speedRotY: number = -0.1;
@@ -20,6 +21,7 @@ namespace Script {
     viewport = _event.detail;
     let graph: ƒ.Node = viewport.getBranch();
     avatar = graph.getChildrenByName("Avatar")[0];
+    bird = graph.getChildrenByName("Environment")[0].getChildrenByName("Bird")[0];
     cmpCamera = avatar.getChild(0).getComponent(ƒ.ComponentCamera);
     cmpLight = avatar.getChild(1).getComponent(ƒ.ComponentLight);
     ground = graph.getChildrenByName("Environment")[0].getChildrenByName("Ground")[0];
@@ -31,6 +33,9 @@ namespace Script {
 
     ƒ.Loop.addEventListener(ƒ.EVENT.LOOP_FRAME, update);
     ƒ.Loop.start();  // start the game loop to continously draw the viewport, update the audiosystem and drive the physics i/a
+  
+    initAnim();
+    document.body.addEventListener("change", initAnim);
   }
 
   function update(_event: Event): void {
@@ -68,5 +73,39 @@ namespace Script {
     rotationX = Math.min(80, Math.max(-80, rotationX));
     cmpCamera.mtxPivot.rotation = ƒ.Vector3.X(rotationX);
     cmpLight.mtxPivot.rotation = ƒ.Vector3.X(rotationX);
+  }
+
+  function initAnim(): void {
+    let animseq: ƒ.AnimationSequence = new ƒ.AnimationSequence();
+    animseq.addKey(new ƒ.AnimationKey(0, 5));
+    animseq.addKey(new ƒ.AnimationKey(6000, -5));
+    animseq.addKey(new ƒ.AnimationKey(12000, 5));
+
+    let animStructure: ƒ.AnimationStructure = {
+      components: {
+        ComponentTransform: [
+          {
+            "ƒ.ComponentTransform": {
+              mtxLocal: {
+                translation: {
+                  x: animseq,
+                  z: animseq
+                }
+              }
+            }
+          }
+        ]
+      }
+    };
+
+    let animation: ƒ.Animation = new ƒ.Animation("testAnimation", animStructure, 60);
+
+    let cmpAnimator: ƒ.ComponentAnimator = new ƒ.ComponentAnimator(animation, ƒ.ANIMATION_PLAYMODE.LOOP, ƒ.ANIMATION_PLAYBACK.FRAMEBASED);
+    cmpAnimator.scale = 1;
+    if (bird.getComponent(ƒ.ComponentAnimator)) {
+      bird.removeComponent(bird.getComponent(ƒ.ComponentAnimator));
+    }
+    bird.addComponent(cmpAnimator);
+    cmpAnimator.activate(true);
   }
 }

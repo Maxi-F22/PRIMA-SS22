@@ -7,15 +7,12 @@
   },
   "Material|2022-04-14T13:08:29.486Z|56954": {
     "ƒ.Material": {
-      "name": "ShaderGouraudTextured",
+      "name": "ShaderLit",
       "idResource": "Material|2022-04-14T13:08:29.486Z|56954",
-      "shader": "ShaderGouraudTextured",
+      "shader": "ShaderLit",
       "coat": {
-        "ƒ.CoatRemissiveTextured": {
-          "color": "[1, 1, 1, 1]",
-          "idTexture": "TextureImage|2022-04-21T11:49:25.924Z|15672",
-          "diffuse": 1,
-          "specular": 0
+        "ƒ.CoatColored": {
+          "color": "[1, 1, 1, 1]"
         }
       }
     }
@@ -88,9 +85,9 @@
   },
   "Material|2022-04-28T12:37:26.641Z|42636": {
     "ƒ.Material": {
-      "name": "ShaderGouraud",
+      "name": "ShaderLit",
       "idResource": "Material|2022-04-28T12:37:26.641Z|42636",
-      "shader": "ShaderGouraud",
+      "shader": "ShaderLit",
       "coat": {
         "ƒ.CoatRemissive": {
           "color": "[1, 1, 1, 1]",
@@ -172,7 +169,7 @@
                       {
                         "ƒ.ComponentMaterial": {
                           "sortForAlpha": false,
-                          "clrPrimary": "[1, 1, 1, 1]",
+                          "clrPrimary": "[0.22745098039215686, 0.050980392156862744, 0.050980392156862744, 1]",
                           "clrSecondary": "[1, 1, 1, 1]",
                           "pivot": {
                             "translation": "[0, 0]",
@@ -389,6 +386,62 @@
                     }
                   ]
                 }
+              },
+              {
+                "ƒ.Node": {
+                  "name": "Bird",
+                  "active": true,
+                  "components": {
+                    "ComponentMesh": [
+                      {
+                        "ƒ.ComponentMesh": {
+                          "idMesh": "MeshSphere|2022-04-28T12:36:39.090Z|73294",
+                          "pivot": {
+                            "translation": "[0, 0, 0]",
+                            "rotation": "[0, 0, 0]",
+                            "scaling": "[1, 1, 1]"
+                          },
+                          "Component": {
+                            "active": true
+                          }
+                        }
+                      }
+                    ],
+                    "ComponentTransform": [
+                      {
+                        "ƒ.ComponentTransform": {
+                          "local": {
+                            "translation": "[0, 5, 0]",
+                            "rotation": "[0, 0, 0]",
+                            "scaling": "[0.49999991059303284, 0.49999991059303284, 0.5]"
+                          },
+                          "Component": {
+                            "active": true
+                          }
+                        }
+                      }
+                    ],
+                    "ComponentMaterial": [
+                      {
+                        "ƒ.ComponentMaterial": {
+                          "sortForAlpha": false,
+                          "clrPrimary": "[1, 1, 1, 1]",
+                          "clrSecondary": "[1, 1, 1, 1]",
+                          "pivot": {
+                            "translation": "[0, 0]",
+                            "rotation": 0,
+                            "scaling": "[1, 1]"
+                          },
+                          "Component": {
+                            "active": true
+                          },
+                          "idMaterial": "Material|2022-04-28T12:37:26.641Z|42636"
+                        }
+                      }
+                    ]
+                  },
+                  "children": []
+                }
               }
             ]
           }
@@ -402,31 +455,6 @@
                 {
                   "ƒ.ComponentTransform": {
                     "local": {
-                      "translation": "[0, 0, 0]",
-                      "rotation": "[0, 0, 0]",
-                      "scaling": "[1, 1, 1]"
-                    },
-                    "Component": {
-                      "active": true
-                    }
-                  }
-                }
-              ],
-              "ComponentRigidbody": [
-                {
-                  "ƒ.ComponentRigidbody": {
-                    "initialization": "TO_NODE",
-                    "friction": 0.2,
-                    "restitution": 0.2,
-                    "mass": 1,
-                    "dampTranslation": 0.1,
-                    "dampRotation": 0.1,
-                    "effectGravity": 1,
-                    "typeBody": "DYNAMIC",
-                    "typeCollider": "CUBE",
-                    "isTrigger": false,
-                    "id": 0,
-                    "pivot": {
                       "translation": "[0, 0, 0]",
                       "rotation": "[0, 0, 0]",
                       "scaling": "[1, 1, 1]"
@@ -1134,13 +1162,10 @@
     "ƒ.Material": {
       "name": "TrunkGouraud",
       "idResource": "Material|2022-04-27T18:57:53.653Z|61005",
-      "shader": "ShaderGouraudTextured",
+      "shader": "ShaderLit",
       "coat": {
-        "ƒ.CoatRemissiveTextured": {
-          "color": "[1, 1, 1, 1]",
-          "idTexture": "TextureImage|2022-04-27T18:58:17.341Z|93594",
-          "diffuse": 1,
-          "specular": 0
+        "ƒ.CoatColored": {
+          "color": "[1, 1, 1, 1]"
         }
       }
     }
@@ -1171,13 +1196,10 @@
     "ƒ.Material": {
       "name": "CrownGouraud",
       "idResource": "Material|2022-04-27T19:02:34.222Z|75551",
-      "shader": "ShaderGouraudTextured",
+      "shader": "ShaderLit",
       "coat": {
-        "ƒ.CoatRemissiveTextured": {
-          "color": "[1, 1, 1, 1]",
-          "idTexture": "TextureImage|2022-04-27T19:02:30.742Z|45383",
-          "diffuse": 1,
-          "specular": 0
+        "ƒ.CoatColored": {
+          "color": "[1, 1, 1, 1]"
         }
       }
     }
@@ -1212,7 +1234,7 @@
                 {
                   "ƒ.ComponentMaterial": {
                     "sortForAlpha": false,
-                    "clrPrimary": "[1, 1, 1, 1]",
+                    "clrPrimary": "[0.2196078431372549, 0.0196078431372549, 0.0196078431372549, 1]",
                     "clrSecondary": "[1, 1, 1, 1]",
                     "pivot": {
                       "translation": "[0, 0]",
@@ -1260,7 +1282,7 @@
                       {
                         "ƒ.ComponentMaterial": {
                           "sortForAlpha": false,
-                          "clrPrimary": "[1, 1, 1, 1]",
+                          "clrPrimary": "[0, 0.6196078431372549, 0.10196078431372549, 1]",
                           "clrSecondary": "[1, 1, 1, 1]",
                           "pivot": {
                             "translation": "[0, 0]",
@@ -1316,7 +1338,7 @@
                       {
                         "ƒ.ComponentMaterial": {
                           "sortForAlpha": false,
-                          "clrPrimary": "[1, 1, 1, 1]",
+                          "clrPrimary": "[0, 0.6392156862745098, 0.0196078431372549, 1]",
                           "clrSecondary": "[1, 1, 1, 1]",
                           "pivot": {
                             "translation": "[0, 0]",
@@ -1372,7 +1394,7 @@
                       {
                         "ƒ.ComponentMaterial": {
                           "sortForAlpha": false,
-                          "clrPrimary": "[1, 1, 1, 1]",
+                          "clrPrimary": "[0, 0.6392156862745098, 0.2784313725490196, 1]",
                           "clrSecondary": "[1, 1, 1, 1]",
                           "pivot": {
                             "translation": "[0, 0]",
@@ -1428,7 +1450,7 @@
                       {
                         "ƒ.ComponentMaterial": {
                           "sortForAlpha": false,
-                          "clrPrimary": "[1, 1, 1, 1]",
+                          "clrPrimary": "[0.00392156862745098, 0.596078431372549, 0.15294117647058825, 1]",
                           "clrSecondary": "[1, 1, 1, 1]",
                           "pivot": {
                             "translation": "[0, 0]",

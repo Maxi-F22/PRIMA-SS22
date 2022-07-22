@@ -9,7 +9,7 @@
   - Prof. Jirka Dell'Oro-Friedl
   - Das Spiel: https://maxi-f22.github.io/PRIMA-SS22/Endabgabe/
   - Source-Code: https://github.com/Maxi-F22/PRIMA-SS22/tree/main/Endabgabe
-  - Design-Dokument:
+  - Design-Dokument: https://github.com/Maxi-F22/PRIMA-SS22/blob/main/Endabgabe/Doc/DesignDoc.pdf
   - Wie man spielt:  
     Maus zum Bewegen der Kamera  
     WASD zum Bewegen  
